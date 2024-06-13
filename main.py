@@ -6,9 +6,37 @@ import numpy as np
 import cv2
 import pyautogui
 from pynput.mouse import Button, Controller
+from pynput import keyboard
 
 from math_exp import get_angle, get_distance
 import gesture
+
+      
+# Drag and Drop
+
+def drag_and_drop(landmarks, image):
+    if gesture.drag_and_drop_condition(landmarks):
+        cv2.putText(image, "Drag And Drop", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+        # Double-click to initiate drag
+        pyautogui.mouseDown(button='left')
+        pyautogui.mouseDown(button='left')
+        
+        thump_fig_dist = get_distance(landmarks[4], landmarks[5])
+        cursor = gesture.to_move_cursor1(gesture.to_find_index_finger_tip(landmarks), thump_fig_dist)
+
+        if cursor[2]:  # Cursor movement is allowed
+            
+            x, y = cursor[0], cursor[1]
+            pyautogui.moveTo(x, y, duration=0.1)
+            
+            # time.sleep(10)
+            cv2.putText(image, "Cursor For Drag and Drop", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        else:
+            if thump_fig_dist > 70:
+                # Release the left mouse button to drop the file
+                pyautogui.mouseUp(button='left')
+                cv2.putText(image, "Dropped", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
 
 mouse = Controller()
@@ -29,8 +57,17 @@ def gesture_recognition(image, landmark_lst,  ):
 
     cursor =gesture.to_move_cursor(gesture.to_find_index_finger_tip(landmark_lst), thump_fig_dist)
 
-    #Cursor
-    if cursor[2]:
+    # Coordinates
+    if gesture.coordinate_recognition(landmark_lst):
+        cv2.putText(image, gesture.coordinate_recognition(landmark_lst), (50, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 0), 2)
+
+    # Drag and Drop
+    if gesture.drag_and_drop_condition(landmark_lst):
+        drag_and_drop(landmark_lst, image)
+
+
+    # #Cursor
+    elif cursor[2]:
         x = cursor[0]
         y = cursor[1]
         pyautogui.moveTo(x, y, duration =0.2)
@@ -44,7 +81,7 @@ def gesture_recognition(image, landmark_lst,  ):
         mouse.release(Button.left)
         cv2.putText(image, "Left Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-    #Right Click
+    # Right Click
     elif gesture.to_right_click(landmark_lst, thump_fig_dist):
                    
         mouse.press(Button.right)
@@ -53,9 +90,24 @@ def gesture_recognition(image, landmark_lst,  ):
 
     # Double Click
     elif gesture.to_double_click(landmark_lst, thump_fig_dist):
-        
+
         pyautogui.doubleClick()
         cv2.putText(image, "Double Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+
+
+    
+
+    # # Display/Hide the Desktop
+    # elif gesture.to_display_hide_desktop(landmark_lst, thump_fig_dist):
+    #     keyboard1 = keyboard.Controller()
+    #     SUPER_KEY = keyboard.Key.cmd
+
+    #     keyboard1.press(SUPER_KEY)
+    #     keyboard1.press('d')
+    #     keyboard1.release('d')
+    #     keyboard1.release(SUPER_KEY)
+    #     cv2.putText(image, "Display/Hide the Desktop", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
 
 
 

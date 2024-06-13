@@ -6,6 +6,9 @@ import numpy as np
 import cv2
 import pyautogui
 
+from math_exp import get_angle, get_distance
+import gesture as ges
+
 # Initialize MediaPipe Hands.
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()
@@ -46,8 +49,18 @@ try:
                 for landmarks in result.multi_hand_landmarks[0].landmark:
                     landmark_lst.append((landmarks.x, landmarks.y, landmarks.z))
 
-                # Display the image.
-                cv2.imshow('Hand Tracking and Gesture Recognition', image)
+                thump_fig_dist = get_distance(landmark_lst[4], landmark_lst[5])
+                
+                cursor =ges.to_move_cursor(ges.to_find_index_finger_tip(landmark_lst), thump_fig_dist)
+
+                if cursor[2]:
+                    x = cursor[0]
+                    y = cursor[1]
+                    pyautogui.moveTo(x, y, duration =0.2)
+                    cv2.putText(image, "Cursor", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+            # Display the image.
+            cv2.imshow('Hand Tracking and Gesture Recognition', image)
             if cv2.waitKey(5) & 0xFF == 27:
                 break  
 

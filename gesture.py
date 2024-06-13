@@ -30,4 +30,10 @@ def to_left_click(landmarks, thump_dis):
             get_angle(landmarks[9], landmarks[10], landmarks[12] ) > 90 and
              thump_dis <70)
     
+
+# Condition for Right Click
+def to_right_click(landmarks, thump_dis):
+    return (get_angle(landmarks[5], landmarks[6], landmarks[8])>90 and 
+            get_angle(landmarks[9], landmarks[10], landmarks[12] ) < 70 and
+             thump_dis <70)
             

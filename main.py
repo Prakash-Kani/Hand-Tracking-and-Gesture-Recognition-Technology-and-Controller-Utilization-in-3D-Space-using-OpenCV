@@ -8,7 +8,7 @@ import pyautogui
 from pynput.mouse import Button, Controller
 
 from math_exp import get_angle, get_distance
-import gesture as ges
+import gesture
 
 
 mouse = Controller()
@@ -27,7 +27,7 @@ def gesture_recognition(image, landmark_lst,  ):
 
     thump_fig_dist = get_distance(landmark_lst[4], landmark_lst[5])
 
-    cursor =ges.to_move_cursor(ges.to_find_index_finger_tip(landmark_lst), thump_fig_dist)
+    cursor =gesture.to_move_cursor(gesture.to_find_index_finger_tip(landmark_lst), thump_fig_dist)
 
     #Cursor
     if cursor[2]:
@@ -38,11 +38,18 @@ def gesture_recognition(image, landmark_lst,  ):
 
     
     # Left Click
-    elif ges.to_left_click(landmark_lst, thump_fig_dist):
+    elif gesture.to_left_click(landmark_lst, thump_fig_dist):
         
         mouse.press(Button.left)
         mouse.release(Button.left)
         cv2.putText(image, "Left Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+    #Right Click
+    elif gesture.to_right_click(landmark_lst, thump_fig_dist):
+                    # print('right clicked')
+                    mouse.press(Button.right)
+                    mouse.release(Button.right)
+                    cv2.putText(image, "Right Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
 
 

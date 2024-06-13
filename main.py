@@ -46,10 +46,16 @@ def gesture_recognition(image, landmark_lst,  ):
 
     #Right Click
     elif gesture.to_right_click(landmark_lst, thump_fig_dist):
-                    # print('right clicked')
-                    mouse.press(Button.right)
-                    mouse.release(Button.right)
-                    cv2.putText(image, "Right Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                   
+        mouse.press(Button.right)
+        mouse.release(Button.right)
+        cv2.putText(image, "Right Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+    # Double Click
+    elif gesture.to_double_click(landmark_lst, thump_fig_dist):
+        
+        pyautogui.doubleClick()
+        cv2.putText(image, "Double Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
 
 
 

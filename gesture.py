@@ -1,5 +1,6 @@
 
 import pyautogui
+from math_exp import get_angle, get_distance
 
 # Get the size of the primary monitor.
 screen_width, screen_height = pyautogui.size()
@@ -22,4 +23,11 @@ def to_move_cursor(finger_tip, distance):
         else:
             return x, y, False
 
+
+# Condition for Left Click
+def to_left_click(landmarks, thump_dis):
+    return (get_angle(landmarks[5], landmarks[6], landmarks[8])<70 and 
+            get_angle(landmarks[9], landmarks[10], landmarks[12] ) > 90 and
+             thump_dis <70)
+    
             

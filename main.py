@@ -1,12 +1,17 @@
 # import required packages
 
+import time
 import cv2
 import mediapipe as mp
 import numpy as np
 import cv2
 import pyautogui
+from pynput.keyboard import Key, Controller
+keyboard = Controller()
+
 from pynput.mouse import Button, Controller
-from pynput import keyboard
+mouse = Controller()
+
 
 from math_exp import get_angle, get_distance
 import gesture
@@ -22,8 +27,8 @@ def drag_and_drop(landmarks, image):
         pyautogui.mouseDown(button='left')
         pyautogui.mouseDown(button='left')
         
-        thump_fig_dist = get_distance(landmarks[4], landmarks[5])
-        cursor = gesture.to_move_cursor1(gesture.to_find_index_finger_tip(landmarks), thump_fig_dist)
+        thumb_fig_dist = get_distance(landmarks[4], landmarks[5])
+        cursor = gesture.to_move_cursor1(gesture.to_find_index_finger_tip(landmarks), thumb_fig_dist)
 
         if cursor[2]:  # Cursor movement is allowed
             
@@ -33,13 +38,13 @@ def drag_and_drop(landmarks, image):
             # time.sleep(10)
             cv2.putText(image, "Cursor For Drag and Drop", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         else:
-            if thump_fig_dist > 70:
+            if thumb_fig_dist > 70:
                 # Release the left mouse button to drop the file
                 pyautogui.mouseUp(button='left')
                 cv2.putText(image, "Dropped", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
 
-mouse = Controller()
+
 
 # Initialize MediaPipe Hands.
 mp_hands = mp.solutions.hands
@@ -53,9 +58,9 @@ screen_width, screen_height = pyautogui.size()
 
 def gesture_recognition(image, landmark_lst,  ):
 
-    thump_fig_dist = get_distance(landmark_lst[4], landmark_lst[5])
+    thumb_fig_dist = get_distance(landmark_lst[4], landmark_lst[5])
 
-    cursor =gesture.to_move_cursor(gesture.to_find_index_finger_tip(landmark_lst), thump_fig_dist)
+    cursor =gesture.to_move_cursor(gesture.to_find_index_finger_tip(landmark_lst), thumb_fig_dist, landmark_lst)
 
     # Coordinates
     if gesture.coordinate_recognition(landmark_lst):
@@ -66,8 +71,8 @@ def gesture_recognition(image, landmark_lst,  ):
         drag_and_drop(landmark_lst, image)
 
 
-    # #Cursor
-    elif cursor[2]:
+    #Cursor
+    elif cursor[2] and cursor[3]:
         x = cursor[0]
         y = cursor[1]
         pyautogui.moveTo(x, y, duration =0.2)
@@ -75,30 +80,30 @@ def gesture_recognition(image, landmark_lst,  ):
 
     
     # Left Click
-    elif gesture.to_left_click(landmark_lst, thump_fig_dist):
+    elif gesture.to_left_click(landmark_lst, thumb_fig_dist):
         
         mouse.press(Button.left)
         mouse.release(Button.left)
         cv2.putText(image, "Left Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
     # Right Click
-    elif gesture.to_right_click(landmark_lst, thump_fig_dist):
+    elif gesture.to_right_click(landmark_lst, thumb_fig_dist):
                    
         mouse.press(Button.right)
         mouse.release(Button.right)
         cv2.putText(image, "Right Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
     # Double Click
-    elif gesture.to_double_click(landmark_lst, thump_fig_dist):
+    # elif gesture.to_double_click(landmark_lst, thumb_fig_dist):
 
-        pyautogui.doubleClick()
-        cv2.putText(image, "Double Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+    #     pyautogui.doubleClick()
+    #     cv2.putText(image, "Double Click", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
 
 
     
 
     # # Display/Hide the Desktop
-    # elif gesture.to_display_hide_desktop(landmark_lst, thump_fig_dist):
+    # elif gesture.to_display_hide_desktop(landmark_lst, thumb_fig_dist):
     #     keyboard1 = keyboard.Controller()
     #     SUPER_KEY = keyboard.Key.cmd
 
@@ -107,6 +112,22 @@ def gesture_recognition(image, landmark_lst,  ):
     #     keyboard1.release('d')
     #     keyboard1.release(SUPER_KEY)
     #     cv2.putText(image, "Display/Hide the Desktop", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+    # Task Swicher
+    elif gesture.to_task_swicher(landmark_lst, thumb_fig_dist):
+        cv2.putText(image, "Task Swicher", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        # from pynput.keyboard import Key, Controller
+
+        # keyboard = Controller()
+
+        # Press the Alt  and  Tap key
+        keyboard.press(Key.alt)
+        keyboard.press(Key.tab)
+
+        # Release the Alt  and  Tap key
+        keyboard.release(Key.alt)
+        keyboard.release(Key.tab)
+        time.sleep(1)
 
 
 
